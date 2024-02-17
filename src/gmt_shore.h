@@ -80,7 +80,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	/* Global variables that remain fixed for all bins */
 
 	int nb;		/* Number of bins to use */
-	int *bins;		/* Array with the nb bin numbers to use */
+	int *bins;		/* Array with the nb bin numbers to use. I suspect this does not come from the file, but is populated when the struct is created*/
 	int min_level;	/* Lowest level to include [0] */
 	int max_level;	/* Highest level to include [4] */
 	int flag;		/* If riverlakes or lakes are to be excluded */
@@ -92,7 +92,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	/* Variables associated with the current bin */
 
 	int ns;			/* Number of segments to use in current bin */
-	unsigned char node_level[4];
+	unsigned char node_level[4];  /* Node levels of this bin, without Antartica grounding line */
 	unsigned char node_level_g[4];	/* Levels if gronding line Antarctica is used */
 	struct GMT_SHORE_SEGMENT *seg;	/* Array of these segments */
 	struct GSHHS_SIDE *side[4];	/* Has position & id for each side exit/entry */
@@ -139,31 +139,31 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 
 	int cdfid;		/* netCDF File id for coastbin file */
 
-	int bin_size_id;	/* Id for variable bin_size */
-	int bin_nx_id;		/* Id for variable bin_nx */
-	int bin_ny_id;		/* Id for variable bin_ny */
-	int n_poly_id;		/* Id for variable n_bin */
-	int n_bin_id;		/* Id for variable n_bin */
-	int n_seg_id;		/* Id for variable n_seg */
-	int n_pt_id;		/* Id for variable n_pt */
-	int n_node_id;		/* Id for variable n_nodes */
-	int bin_firstseg_id;	/* Id for variable bin_firstseg */
-	int bin_info_id;	/* Id for variable bin_info, aka Embedded_node_levels_in_a_bin*/
-	int bin_info_id_ANT;	/* Id for variable bin_info, aka Embedded_node_levels_in_a_bin_ANT */
-	int bin_nseg_id;	/* Id for variable bin_nseg */
+	int bin_size_id;	/* Id for variable bin_size, aka "Bin_size_in_minutes"*/
+	int bin_nx_id;		/* Id for variable bin_nx, aka "N_bins_in_360_longitude_range" */
+	int bin_ny_id;		/* Id for variable bin_ny, aka "N_bins_in_180_degree_latitude_range"  */
+	int n_poly_id;		/* Id for variable n_poly, aka "N_polygons_in_file" */
+	int n_bin_id;		/* Id for variable n_bin, aka "N_bins_in_file" */
+	int n_seg_id;		/* Id for variable n_seg, aka "N_segments_in_file"*/
+	int n_pt_id;		/* Id for variable n_pt, aka "N_points_in_file" */
+	int n_node_id;		/* Id for variable n_nodes, aka "N_nodes_in_file" */
+	int bin_firstseg_id;	/* Id for variable bin_firstseg, aka "Id_of_first_segment_in_a_bin"*/
+	int bin_info_id;	/* Id for variable bin_info, aka "Embedded_node_levels_in_a_bin"*/
+	int bin_info_id_ANT;	/* Id for variable bin_info, aka "Embedded_node_levels_in_a_bin_ANT"*/
+	int bin_nseg_id;	/* Id for variable bin_nseg, aka "N_segments_in_a_bin"*/
 
-	int seg_info_id;	/* Id for variable seg_info */
-	int seg_info_id_ANT;	/* Id for variable seg_info for Antarctica */
-	int seg_start_id;	/* Id for variable seg_start */
-	int seg_GSHHS_ID_id;	/* Id for variable seg_GSHHS_ID */
+	int seg_info_id;	/* Id for variable seg_info, aka "Embedded_npts_levels_exit_entry_for_a_segment"*/
+	int seg_info_id_ANT;	/* Id for variable seg_info for Antarctica "Embedded_ANT_flag"*/
+	int seg_start_id;	/* Id for variable seg_start, aka "Id_of_first_point_in_a_segment"*/
+	int seg_GSHHS_ID_id;	/* Id for variable seg_GSHHS_ID, aka "Id_of_GSHHS_ID"*/
 
-	int GSHHS_parent_id;	/* Id for variable GSHHS_parent */
-	int GSHHS_area_id;	/* Id for variable GSHHS_area */
-	int GSHHS_areafrac_id;	/* Id for variable GSHHS_area_fraction */
-	int GSHHS_node_id;	/* Id for variable GSHHS_node_id */
+	int GSHHS_parent_id;	/* Id for variable GSHHS_parent, aka "Id_of_parent_polygons"*/
+	int GSHHS_area_id;	/* Id for variable GSHHS_area, aka "Ten_times_the_km_squared_area_of_polygons" OR "The_km_squared_area_of_polygons", depending on GSHHS version*/
+	int GSHHS_areafrac_id;	/* Id for variable GSHHS_area_fraction, aka "Micro_fraction_of_full_resolution_area"*/
+	int GSHHS_node_id;	/* Id for variable GSHHS_node_id, aka "Id_of_node_polygons"*/
 
-	int pt_dx_id;		/* Id for variable pt_dx */
-	int pt_dy_id;		/* Id for variable pt_dy */
+	int pt_dx_id;		/* Id for variable pt_dx, aka "Relative_longitude_from_SW_corner_of_bin"*/
+	int pt_dy_id;		/* Id for variable pt_dy, aka "Relative_latitude_from_SW_corner_of_bin"*/
 };
 
 struct GMT_SHORE_SEGMENT {

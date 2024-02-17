@@ -812,13 +812,19 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	signed char *seg_info_ANT = NULL;
 	double w, e, dx;
 
+	// it's not clear exactly what a "node" is and why it has a level
+	// if there are 4 per bin this implies they are grid intersection points,
+	// but if that's the case, how can it have a level? unless level does not
+	// mean feature level (lake, river, etc.) but something else
+	// it also appears that unsigned short corner doesn't get used beyond
+	// this section
 	for (k = 0; k < 4; k++) {	/* Extract node corner levels */
 		corner[k] = ((unsigned short)c->bin_info[b] >> bitshift[k]) & 7;
 		c->node_level[k] = (unsigned char)MIN (corner[k], c->max_level);
 		corner[k] = ((unsigned short)c->bin_info_g[b] >> bitshift[k]) & 7;
 		c->node_level_g[k] = (unsigned char)MIN (corner[k], c->max_level);
 	}
-	dx = c->bin_size / 60.0;
+	dx = c->bin_size / 60.0;  // result: size of bin in degrees
 	c->lon_sw = (c->bins[b] % c->bin_nx) * dx;
 	ny = (c->bins[b] / c->bin_nx) + 1;
 	c->lat_sw = 90.0 - ny * dx;
