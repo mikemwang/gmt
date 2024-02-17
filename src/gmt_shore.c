@@ -79,6 +79,7 @@
 
 /* ---------- LOCAL FUNCTIONS CALLED BY THE PUBLIC FUNCTIONS ------------ */
 
+// raw to degree!
 GMT_LOCAL void gmtshore_to_degree (struct GMT_SHORE *c, short int dx, short int dy, double *lon, double *lat) {
 	/* Converts relative (0-65535) coordinates to actual lon, lat values */
 	*lon = c->lon_sw + ((unsigned short)dx) * c->scale;

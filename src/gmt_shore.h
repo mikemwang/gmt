@@ -121,8 +121,8 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 
 	int *GSHHS_node;	/* Array with ids of the polygon that enclose each node */
 	int *bin_firstseg;	/* Array with ids of first segment per bin */
-	short int *bin_info;	/* Array with levels of all 4 nodes per bin */
-	short int *bin_info_g;	/* Array with levels of all 4 nodes per bin for the other Antarctica choice [or NULL] */
+	short int *bin_info;	/* Array with levels of all 4 nodes per bin, aka "Embedded_node_levels_in_a_bin"*/
+	short int *bin_info_g;	/* Array with levels of all 4 nodes per bin for the other Antarctica choice [or NULL], aka "Embedded_node_levels_in_a_bin_ANT"*/
 	short int *bin_nseg;	/* Array with number of segments per bin */
 
 	int *GSHHS_parent;		/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */
@@ -148,8 +148,8 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int n_pt_id;		/* Id for variable n_pt */
 	int n_node_id;		/* Id for variable n_nodes */
 	int bin_firstseg_id;	/* Id for variable bin_firstseg */
-	int bin_info_id;	/* Id for variable bin_info */
-	int bin_info_id_ANT;	/* Id for variable bin_info */
+	int bin_info_id;	/* Id for variable bin_info, aka Embedded_node_levels_in_a_bin*/
+	int bin_info_id_ANT;	/* Id for variable bin_info, aka Embedded_node_levels_in_a_bin_ANT */
 	int bin_nseg_id;	/* Id for variable bin_nseg */
 
 	int seg_info_id;	/* Id for variable seg_info */
