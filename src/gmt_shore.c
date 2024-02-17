@@ -707,7 +707,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
-		c->bins[nb] = i;
+		c->bins[nb] = i;  // this is where c->bins is populated, the loop figures out which bin indicies overlap the desired range, then this performs what is essentially a python list.append()
 		nb++;
 	}
 	c->bins = gmt_M_memory (GMT, c->bins, nb, int);
@@ -762,13 +762,20 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	stmp = gmt_M_memory (GMT, NULL, c->n_bin, short);
 
 	/* Keep the node levels for when the grounding line polygon is in effect */
+	// save bin_info_id_ANT to stmp
 	err = nc_get_vara_short (c->cdfid, c->bin_info_id_ANT, start, count, stmp);
+
+	// at the end, bin_info_g[i] contains the bin_info_id_ANT of bin bins[i]
+	// so i is the index of the used bin in the bins array, not the actual
+	// bin number 
 	for (i = 0; i < c->nb; i++) c->bin_info_g[i] = stmp[c->bins[i]];
 
 	if (c->ant_mode & GSHHS_ANTARCTICA_ICE) {	/* Get node levels relevant for ice-shelf */
+	// stmp now holds bin_info_id
 		err = nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp);
 	}
 	else {	/* Get node levels relevant for grounding line */
+	// stmp now holds bin_info_id_ANT
 		err = nc_get_vara_short (c->cdfid, c->bin_info_id_ANT, start, count, stmp);
 	}
 	if (err) {
@@ -776,13 +783,18 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		gmt_M_free (GMT, stmp);
 		return (err);
 	}
+
+	// at the end, bin_info[i] contains the bin_info_id OR bin_info_id_ANT of bin bins[i]
+	// bin_info_g still contains bin_info_id_ANT
 	for (i = 0; i < c->nb; i++) c->bin_info[i] = stmp[c->bins[i]];
 
+	// now stemp holds bin_nseg_id of all bins
 	if ((err = nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp))) {
 		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 		gmt_M_free (GMT, stmp);
 		return (err);
 	}
+	// bin_nseg[i] holds the bin_nseg_id of bin bins[i]
 	for (i = 0; i < c->nb; i++) c->bin_nseg[i] = stmp[c->bins[i]];
 	gmt_M_free (GMT, stmp);
 
@@ -792,6 +804,8 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		gmt_M_free (GMT, itmp);
 		return (err);
 	}
+	// these stmp and itmp patterns are just temporary variables, since the read data
+	// is for all bins, but the final stored values are only for the used bins
 	for (i = 0; i < c->nb; i++) c->bin_firstseg[i] = itmp[c->bins[i]];
 
 	gmt_M_free (GMT, itmp);

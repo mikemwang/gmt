@@ -79,8 +79,8 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 
 	/* Global variables that remain fixed for all bins */
 
-	int nb;		/* Number of bins to use */
-	int *bins;		/* Array with the nb bin numbers to use. I suspect this does not come from the file, but is populated when the struct is created*/
+	int nb;		/* Number of bins to use (i.e. number of bins that overlap the desired area)*/
+	int *bins;		/* Array with the nb bin numbers to use. Each index represents a bin to use*/
 	int min_level;	/* Lowest level to include [0] */
 	int max_level;	/* Highest level to include [4] */
 	int flag;		/* If riverlakes or lakes are to be excluded */
