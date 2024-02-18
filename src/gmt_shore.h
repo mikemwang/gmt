@@ -79,7 +79,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 
 	/* Global variables that remain fixed for all bins */
 
-	int nb;		/* Number of bins to use (i.e. number of bins that overlap the desired area)*/
+	int nb;		/* Number of bins to use (i.e. number of bins that overlap the desired area, but not necessarily bins 0-n)*/
 	int *bins;		/* Array with the nb bin numbers to use. Each index represents a bin to use*/
 	int min_level;	/* Lowest level to include [0] */
 	int max_level;	/* Highest level to include [4] */

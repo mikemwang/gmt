@@ -830,8 +830,8 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	// if there are 4 per bin this implies they are grid intersection points,
 	// but if that's the case, how can it have a level? unless level does not
 	// mean feature level (lake, river, etc.) but something else
-	// it also appears that unsigned short corner doesn't get used beyond
-	// this section
+	// it also appears that unsigned short "corner" doesn't get used beyond
+	// this section, not sure why it has to be an array
 	for (k = 0; k < 4; k++) {	/* Extract node corner levels */
 		corner[k] = ((unsigned short)c->bin_info[b] >> bitshift[k]) & 7;
 		c->node_level[k] = (unsigned char)MIN (corner[k], c->max_level);
@@ -839,8 +839,8 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		c->node_level_g[k] = (unsigned char)MIN (corner[k], c->max_level);
 	}
 	dx = c->bin_size / 60.0;  // result: size of bin in degrees
-	c->lon_sw = (c->bins[b] % c->bin_nx) * dx;
-	ny = (c->bins[b] / c->bin_nx) + 1;
+	c->lon_sw = (c->bins[b] % c->bin_nx) * dx;  
+	ny = (c->bins[b] / c->bin_nx) + 1;  // since ny is an int, this rounds down
 	c->lat_sw = 90.0 - ny * dx;
 	c->ns = 0;
 
@@ -851,10 +851,22 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	w = c->lon_sw;
 	while (w > GMT->common.R.wesn[XLO] && GMT->current.map.is_world) w -= 360.0;
 	e = w + dx;
+	// leftmost_bin appears not to be used here, but in gmtshore_path_shift2
 	c->leftmost_bin = ((w <= GMT->common.R.wesn[XLO]) && (e > GMT->common.R.wesn[XLO]));
 
 	if (c->bin_nseg[b] == 0) return (GMT_NOERROR);
 
+	// it's still not clear what "node" means, but I see that ll_node is used to index into the 
+	// Id_of_node_polygons array, and inc is used to find the other nodes relative to this node
+	// e.g.:
+	// c->bins[b] = 0, c->bin_nx = 18
+	// ll_node = ((0 / 18)+1) * (18+1) + (0 % 18) = (1*19)+0 = 19
+	// ll_node + inc[0] = 19 + 0 = 19
+	// ll_node + inc[1] = 19 + 1 = 20
+	// ll_node + inc[2] = 19 + 1 - (c->bin_nx + 1) = 19 + 1 - 18 - 1 = 1
+	// ll_node + inc[3] = 19 - (c->bin_nx + 1) = 19 - 19 = 0
+	// conclusion: interpret "nodes" as grid points, hence why there are (bin_nx+1) * (bin_ny+1)
+	// nodes, rather than just bin_nx * bin_ny
 	ll_node = ((c->bins[b] / c->bin_nx) + 1) * (c->bin_nx + 1) + (c->bins[b] % c->bin_nx);		/* lower-left node in current bin */
 	inc[0] = 0;	inc[1] = 1;	inc[2] = 1 - (c->bin_nx + 1);	inc[3] = -(c->bin_nx + 1);	/* Relative incs to other nodes */
 
@@ -1020,6 +1032,8 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 			return (err);
 		}
 	}
+	// at this point, data has been loaded properly into the struct
+	// but still no polygons
 
 	gmt_M_free (GMT, seg_skip);
 	gmt_M_free (GMT, seg_info);
